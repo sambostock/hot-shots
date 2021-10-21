@@ -39,8 +39,8 @@ describe('#init', () => {
 
     assert.strictEqual(statsd.host, 'host');
     assert.strictEqual(statsd.port, 1234);
-    assert.strictEqual(statsd.prefix, 'prefix');
-    assert.strictEqual(statsd.suffix, 'suffix');
+    assert.strictEqual(statsd.prefix, 'prefix.');
+    assert.strictEqual(statsd.suffix, '.suffix');
     assert.strictEqual(statsd, global.statsd);
     assert.strictEqual(statsd.mock, true);
     assert.deepStrictEqual(statsd.globalTags, ['gtag']);
@@ -74,8 +74,8 @@ describe('#init', () => {
 
     assert.strictEqual(statsd.host, 'host');
     assert.strictEqual(statsd.port, 1234);
-    assert.strictEqual(statsd.prefix, 'prefix');
-    assert.strictEqual(statsd.suffix, 'suffix');
+    assert.strictEqual(statsd.prefix, 'prefix.');
+    assert.strictEqual(statsd.suffix, '.suffix');
     assert.strictEqual(statsd, global.statsd);
     assert.strictEqual(statsd.mock, true);
     assert.strictEqual(statsd.sampleRate, 0.6);
@@ -219,5 +219,85 @@ describe('#init', () => {
       assert.strictEqual(statsd.socket.type, 'tcp');
       done();
     });
+  });
+
+  it('should append prefix separator if not present', () => {
+    statsd = createHotShotsClient({prefix: 'prefix'}, clientType);
+    assert.strictEqual(statsd.prefix, 'prefix.');
+  });
+
+  it('should not append prefix separator if already present', () => {
+    statsd = createHotShotsClient({prefix: 'prefix.'}, clientType);
+    assert.strictEqual(statsd.prefix, 'prefix.');
+  });
+
+  it('should not append prefix separator if empty', () => {
+    statsd = createHotShotsClient({prefix: ''}, clientType);
+    assert.strictEqual(statsd.prefix, '');
+  });
+
+  it('should append custom prefix separator if prefix separator not present', () => {
+    statsd = createHotShotsClient({prefix: 'prefix', prefixSeparator: '__'}, clientType);
+    assert.strictEqual(statsd.prefix, 'prefix__');
+  });
+
+  it('should not append custom prefix separator if prefix separator already present', () => {
+    statsd = createHotShotsClient({prefix: 'prefix__', prefixSeparator: '__'}, clientType);
+    assert.strictEqual(statsd.prefix, 'prefix__');
+  });
+
+  it('should not append custom prefix separator if prefix empty', () => {
+    statsd = createHotShotsClient({prefix: '', prefixSeparator: '__'}, clientType);
+    assert.strictEqual(statsd.prefix, '');
+  });
+
+  it('should not append any prefix separator if prefix separator is empty', () => {
+    statsd = createHotShotsClient({prefix: 'prefix', prefixSeparator: ''}, clientType);
+    assert.strictEqual(statsd.prefix, 'prefix');
+  });
+
+  it('should not append custom prefix separator if prefix empty', () => {
+    statsd = createHotShotsClient({prefix: '', prefixSeparator: ''}, clientType);
+    assert.strictEqual(statsd.prefix, '');
+  });
+
+  it('should prepend suffix separator if not present', () => {
+    statsd = createHotShotsClient({suffix: 'suffix'}, clientType);
+    assert.strictEqual(statsd.suffix, '.suffix');
+  });
+
+  it('should not prepend suffix separator if already present', () => {
+    statsd = createHotShotsClient({suffix: '.suffix'}, clientType);
+    assert.strictEqual(statsd.suffix, '.suffix');
+  });
+
+  it('should not prepend suffix separator if empty', () => {
+    statsd = createHotShotsClient({suffix: ''}, clientType);
+    assert.strictEqual(statsd.suffix, '');
+  });
+
+  it('should prepend custom suffix separator if suffix separator not present', () => {
+    statsd = createHotShotsClient({suffix: 'suffix', suffixSeparator: '__'}, clientType);
+    assert.strictEqual(statsd.suffix, '__suffix');
+  });
+
+  it('should not prepend custom suffix separator if suffix separator already present', () => {
+    statsd = createHotShotsClient({suffix: '__suffix', suffixSeparator: '__'}, clientType);
+    assert.strictEqual(statsd.suffix, '__suffix');
+  });
+
+  it('should not prepend custom suffix separator if suffix empty', () => {
+    statsd = createHotShotsClient({suffix: '', suffixSeparator: '__'}, clientType);
+    assert.strictEqual(statsd.suffix, '');
+  });
+
+  it('should not prepend any suffix separator if suffix separator is empty', () => {
+    statsd = createHotShotsClient({suffix: 'suffix', suffixSeparator: ''}, clientType);
+    assert.strictEqual(statsd.suffix, 'suffix');
+  });
+
+  it('should not prepend custom suffix separator if suffix empty', () => {
+    statsd = createHotShotsClient({suffix: '', suffixSeparator: ''}, clientType);
+    assert.strictEqual(statsd.suffix, '');
   });
 });
